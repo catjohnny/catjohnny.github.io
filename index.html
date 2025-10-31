@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECMO 啟動條件檢查</title>
+<style>
+  body {
+    font-family: "Noto Sans TC", Arial, sans-serif;
+    background-color: #111;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  h2 {
+    text-align: center;
+    color: #5dc1ff;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 20px;
+  }
+  .section {
+    background-color: #1b1b1b;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin: 8px 0;
+    font-size: 15px;
+  }
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 8px;
+  }
+  .note {
+    font-size: 13px;
+    color: #bbb;
+    margin-top: 8px;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: #555;
+    color: #fff;
+    padding: 15px 0;
+    font-size: 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  .btn.active {
+    background-color: #e91e63;
+    box-shadow: 0 0 12px #e91e63;
+  }
+  .message-box {
+    background: #1b1b1b;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #ddd;
+    white-space: pre-line;
+  }
+  .copy-btn {
+    margin-top: 10px;
+    background: #2b2b2b;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    color: #5dc1ff;
+    cursor: pointer;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+  <h2>ECMO 啟動條件檢查</h2>
+  <div class="subtitle">啟動分隊：新店<br>（需全數符合方可啟動）</div>
+
+  <div class="section">
+    <label><input type="checkbox" class="chk"> 現場有人在做 CPR</label>
+    <label><input type="checkbox" class="chk"> EMT 接觸後連續兩次可電擊心律</label>
+    <label><input type="checkbox" class="chk"> 現場有人目擊</label>
+    <label><input type="checkbox" class="chk"> 年齡小於 70 歲</label>
+    <label><input type="checkbox" class="chk"> 無長期臥床或末期疾病</label>
+    <label><input type="checkbox" class="chk"> 無明顯大出血</label>
+    <p class="note">※ 預期報案至到院時間需 &lt; 35 分鐘</p>
+  </div>
+
+  <a id="callBtn" href="#" class="btn">立即撥打 慈濟ECMO 專線</a>
+
+  <div class="message-box" id="messageBox">
+醫師你好，我是新店分隊，
+目前載送男性/女性 XX 歲目擊 OHCA，
+要啟動葉克膜，
+現場有人目擊且有做 CPR，
+無臥床、無末期病史及大出血，
+預計 XX 分鐘到達醫院。
+  </div>
+
+  <button class="copy-btn" onclick="copyMessage()">📋 複製通報文字</button>
+
+<script>
+  const checks = document.querySelectorAll('.chk');
+  const callBtn = document.getElementById('callBtn');
+  const messageBox = document.getElementById('messageBox');
+
+  function updateButton() {
+    const allChecked = Array.from(checks).every(c => c.checked);
+    if (allChecked) {
+      callBtn.classList.add('active');
+      callBtn.href = 'tel:0966653289'; // ✅ 修改這裡成為實際電話
+    } else {
+      callBtn.classList.remove('active');
+      callBtn.href = '#';
+    }
+  }
+
+  function copyMessage() {
+    navigator.clipboard.writeText(messageBox.innerText)
+      .then(() => alert('已複製通報文字 ✅'))
+      .catch(() => alert('複製失敗 ❌'));
+  }
+
+  checks.forEach(c => c.addEventListener('change', updateButton));
+</script>
+</body>
+</html>
