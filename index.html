@@ -43,21 +43,43 @@
     color: #bbb;
     margin-top: 8px;
   }
-  .btn {
-    display: block;
+  .action-container {
+    margin-top: 20px;
+    text-align: center;
+  }
+  #hospitalSelect {
+    display: none; /* 預設隱藏 */
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #444;
+    background-color: #2b2b2b;
+    color: #fff;
+    -webkit-appearance: none; /* 移除預設樣式 */
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+  }
+  #hospitalSelect option:disabled {
+    color: #888;
+  }
+  #callBtn {
+    display: none; /* 預設隱藏 */
     width: 100%;
     text-align: center;
     background-color: #555;
     color: #fff;
     padding: 15px 0;
     font-size: 18px;
-    border-radius: 10px;
+    border-radius: 0 0 8px 8px; /* 配合 select 樣式 */
     text-decoration: none;
     transition: 0.3s;
   }
-  .btn.active {
+  #callBtn.active {
     background-color: #e91e63;
     box-shadow: 0 0 12px #e91e63;
+    cursor: pointer;
   }
   .message-box {
     background: #1b1b1b;
@@ -82,7 +104,7 @@
 </style>
 </head>
 <body>
-  <h2>ECMO 啟動條件檢查</h2>
+  <h2>新北四大隊ECMO 啟動條件檢查</h2>
   <div class="subtitle">啟動分隊：新店<br>（需全數符合方可啟動）</div>
 
   <div class="section">
@@ -95,7 +117,15 @@
     <p class="note">※ 預期報案至到院時間需 &lt; 35 分鐘</p>
   </div>
 
-  <a id="callBtn" href="#" class="btn">立即撥打 慈濟ECMO 專線</a>
+  <div class="action-container">
+    <select id="hospitalSelect">
+      <option value="" disabled selected>請選擇醫院專線</option>
+      <option value="0900000000">慈濟醫院專線 (0266296599)</option>
+      <option value="0966653289">萬芳醫院專線 (0966653289)</option>
+      <option value="0979012286">新店耕莘專線 (0979012286)</option>
+    </select>
+    <a id="callBtn" href="#" class="btn">立即撥打所選專線</a>
+  </div>
 
   <div class="message-box" id="messageBox">
 醫師你好，我是新店分隊，
@@ -110,15 +140,29 @@
 
 <script>
   const checks = document.querySelectorAll('.chk');
+  const hospitalSelect = document.getElementById('hospitalSelect');
   const callBtn = document.getElementById('callBtn');
   const messageBox = document.getElementById('messageBox');
 
   function updateButton() {
     const allChecked = Array.from(checks).every(c => c.checked);
     if (allChecked) {
-      callBtn.classList.add('active');
-      callBtn.href = 'tel:0966653289'; // ✅ 修改這裡成為實際電話
+      // 所有條件符合，顯示選單和撥號按鈕
+      hospitalSelect.style.display = 'block';
+      callBtn.style.display = 'block';
+      
+      // 檢查是否有選擇醫院
+      if (hospitalSelect.value) {
+        callBtn.classList.add('active');
+        callBtn.href = 'tel:' + hospitalSelect.value;
+      } else {
+        callBtn.classList.remove('active');
+        callBtn.href = '#';
+      }
     } else {
+      // 條件不符合，隱藏選單和撥號按鈕
+      hospitalSelect.style.display = 'none';
+      callBtn.style.display = 'none';
       callBtn.classList.remove('active');
       callBtn.href = '#';
     }
@@ -130,7 +174,14 @@
       .catch(() => alert('複製失敗 ❌'));
   }
 
+  // 監聽所有核取方塊的變化
   checks.forEach(c => c.addEventListener('change', updateButton));
+  
+  // 監聽醫院選單的變化
+  hospitalSelect.addEventListener('change', updateButton);
+
+  // 初始狀態檢查
+  updateButton(); 
 </script>
 </body>
 </html>
